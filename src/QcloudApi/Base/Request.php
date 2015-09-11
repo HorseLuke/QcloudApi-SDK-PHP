@@ -114,7 +114,7 @@ class Request{
         $url = $this->protocol. '://'. $this->host. $this->uri;
         $bodyParam = $this->buildParam($actionName, $param, $requestMethod);
         if('GET' == $requestMethod){
-           $url .= '?'. http_build_query($this->buildParam($actionName, $param, $requestMethod));
+           $url .= '?'. http_build_query($bodyParam);
            $bodyParam = array();
         }
         
