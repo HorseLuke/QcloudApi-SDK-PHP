@@ -1,0 +1,64 @@
+# 腾讯云 - 云API For PHP SDK
+
+## 概述
+
+本PHP SDK适用于调用腾讯云的云API。[详细接口列表点此。](http://www.qcloud.com/wiki/v2/API)
+
+本PHP SDK特点：
+
+* 轻量级胶水层、紧凑型设计
+* 有完整的单元测试代码
+* 符合PSR-4载入方式
+* 仅需修改代码部分地方，即能快速转换成PSR-0载入方式以供PHP 5.2使用（namespace相关更改成类名即可）
+* 预留Composer接入模式（还没有做，主要不太熟悉composer.json）
+
+
+## 协议
+
+按惯例，使用Apache License, Version 2.0协议。
+
+由于时间问题，代码内还没写协议注释，后面再补。
+
+
+```
+
+Copyright 2015 Horse Luke
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+```
+
+## 系统要求
+
+* PHP 5.3或以上（如果要运行单元测试，由于用了trait需要PHP 5.4或以上）
+* PHP启用Curl扩展
+
+## 使用方法
+
+以下目录有使用方法：
+
+* demo目录：是最原始的使用方法，不依赖任何载入方式
+* tests目录下的所有“Example2”开头的目录：根据host进行的测试
+
+建议为不同的腾讯云api host注册一个\QcloudApi\Base\Request类实例，方法有：
+
+* 使用工厂模式 + 单例模式。
+
+  - 见demo/demoFactory.php。
+
+* 使用依赖注入（Dependency Injection）中的Service Locator + 单例模式。
+
+  - 有关依赖注入（Dependency Injection）中的Service Locator直观代码，可以看看 [Github silexphp/Pimple](https://github.com/silexphp/Pimple ) README.md中“Defining Services“部分。
+
+  - 详细见各大框架的实现。
+
