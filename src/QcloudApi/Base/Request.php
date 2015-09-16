@@ -105,10 +105,6 @@ class Request{
      */
     public function send($actionName, $param = null, $requestMethod = 'GET', Response $response = null){
         
-        if(null === $response){
-            $response = new Response();
-        }
-        
         $requestMethod = strtoupper($requestMethod);
         
         $url = $this->protocol. '://'. $this->host. $this->uri;
@@ -123,13 +119,18 @@ class Request{
     
     /**
      * 原始发送请求
-     * @param string $actionName
-     * @param string $param
+     * @param string $url 完整URL
+     * @param string|array $bodyParam body请求体。$requestMethod为POST时有效
      * @param string $requestMethod 请求方法，必须全大写
      * @param Response $response
      * @return Response $response
      */
-    protected function rawSend($url, $bodyParam, $requestMethod, Response $response){
+    protected function rawSend($url, $bodyParam = null, $requestMethod = 'GET', Response $response = null){
+        
+        if(null === $response){
+            $response = new Response();
+        }
+        
         if(null === $this->_curlInit){
             $this->_curlInit = curl_init();
         }
@@ -149,8 +150,12 @@ class Request{
         
         if($requestMethod == 'POST'){
             $curlOpt[CURLOPT_POST] = 1;
-            $bodyParam = is_array($bodyParam) ? http_build_query($bodyParam) : $bodyParam;
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $bodyParam);
+            if($bodyParam !== null){
+                if(is_array($bodyParam) && !$this->rawSendCheckHasFile($bodyParam)){
+                    $bodyParam = http_build_query($bodyParam);
+                }
+                $curlOpt[CURLOPT_POSTFIELDS] = $bodyParam;
+            }
         }
         
         curl_setopt_array($this->_curlInit, $curlOpt);
@@ -168,6 +173,45 @@ class Request{
         $response->setExtractInfo($curlInfo);
         return $response;
     }
+    
+    protected function rawSendCheckHasFile($params){
+         
+        foreach($params as $v){
+            if(is_array($v)){
+                return $this->rawSendCheckHasFile($v);
+            }
+            
+            if($v instanceof CURLFile){
+                return true;
+            }
+             
+            if(!empty($v{0}) && $v{0} == '@'){
+                return true;
+            }
+            
+        }
+         
+        return false;
+    }
+    
+    /**
+     * 低版本PHP的curl_file_create函数兼容
+     * @param string $filename
+     * @param string $mimetype
+     * @param string $postname
+     * @return string
+     */
+    public function curl_file_create($filename, $mimetype = '', $postname = ''){
+         
+        if (!function_exists('curl_file_create')) {
+            return '@'. $filename. ';filename='
+                . ($postname ? $postname : basename($filename))
+                . ($mimetype ? ";type=". $mimetype : '');
+        }
+         
+        return curl_file_create($filename, $mimetype, $postname);
+    }
+    
     
     /**
      * 创建url
@@ -227,7 +271,7 @@ class Request{
         $isSegQue = true;
         foreach($param as $k => $v){
             //文件上传
-            if ($requestMethod == 'POST' && ($v instanceof CURLFile || '@' == $v{0} )) {
+            if ($requestMethod == 'POST' && ($v instanceof CURLFile || (!empty($v{0}) && '@' == $v{0}))) {
                 continue;
             }
             
