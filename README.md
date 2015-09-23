@@ -40,7 +40,7 @@ limitations under the License.
 
 ## 系统要求
 
-* PHP 5.3或以上（如果要运行单元测试，由于用了trait需要PHP 5.4或以上）
+* PHP 5.3或以上（如果要运行单元测试，需要PHP 5.4或以上，因为部分单元测试使用了trait）
 * PHP启用Curl扩展
 
 ## 使用方法
@@ -60,7 +60,7 @@ limitations under the License.
 
   - 有关Service Locator介绍，可以看 [Github silexphp/Pimple](https://github.com/silexphp/Pimple ) README.md中“Defining Services“部分。
   
-  - 如果自己的框架没有实现，可使用SDK已经实现的简单Service Locator：\QcloudApi\Integrate\ServiceLocator。
+  - （2.0.0版本开始可用）如果自己的框架没有实现，可使用SDK已经实现的简单Service Locator：\QcloudApi\Integrate\ServiceLocator。
   
     详细用法见目录/demo/Integrate/ServiceLocatorBasicUsage.php
 
