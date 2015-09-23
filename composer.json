@@ -1,0 +1,24 @@
+{
+    "name": "horseluke/qcloudapi-sdk",
+    "description": "Unofficial SDK For QCloud API",
+    "type": "library",
+    "keywords": ["qcloud","tencent", "sdk", "api"],
+    "homepage": "https://github.com/HorseLuke/QcloudApi-SDK-PHP",
+    "license": "Apache2",
+    "authors": [
+        {
+            "name": "horseluke",
+            "email": "horseluke@126.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+   "require-dev": {
+        "php": ">=5.4.0"
+        "phpunit/phpunit": "4.4.*"
+   },
+    "autoload": {
+        "psr-4": { "QcloudApi\\": "src/"}
+    }
+}
