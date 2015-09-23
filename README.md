@@ -56,7 +56,7 @@ limitations under the License.
 
   - 见demo/demoFactory.php。
 
-* 使用依赖注入（Dependency Injection）中的Service Locator + 单例模式。
+* 或使用依赖注入（Dependency Injection）中的Service Locator + 单例模式。
 
   - 有关Service Locator介绍，可以看 [Github silexphp/Pimple](https://github.com/silexphp/Pimple ) README.md中“Defining Services“部分。
   
