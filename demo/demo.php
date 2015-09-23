@@ -1,6 +1,6 @@
 <?php
 
-exit("comment out this code to run demo");
+require __DIR__. '/common.php';
 
 /**
  * 调用v2/DescribeProject例子：http://www.qcloud.com/wiki/v2/DescribeProject
@@ -12,8 +12,8 @@ require_once __DIR__. '/../src/QcloudApi/Base/Response.php';
 
 $request = new \QcloudApi\Base\Request(array(
     'host' => 'account.api.qcloud.com',
-    'secretId' => '你的secretId',
-    'secretKey' => '你的secretKey',
+    'secretId' => QCLOUD_API_SECRET_ID,
+    'secretKey' => QCLOUD_API_SECRET_KEY,
     'defaultRegion' => 'gz',
 ));
 

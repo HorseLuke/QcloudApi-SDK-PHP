@@ -56,7 +56,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase{
             'Region' => 'gz',
             'Timestamp' => 1408704141,
             'Action' => 'DescribeInstances',
-            'Filepath' => '@/tmp/test1.txt',    //POST时，buildSignature应该忽略该参数
+            'Filepath' => $this->request->curl_file_create('/tmp/test1.txt'),    //POST时，buildSignature应该忽略该文件上传参数
         );
     
         $sig = $this->request->buildSignature($param, 'POST');

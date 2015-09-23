@@ -1,10 +1,6 @@
 <?php
 
-exit("comment out this code to run demo");
-
-//如果用了PSR-4载入方式，以下require_once请删除忽略
-require_once __DIR__. '/../src/QcloudApi/Base/Request.php';
-require_once __DIR__. '/../src/QcloudApi/Base/Response.php';
+require __DIR__. '/common.php';
 
 class QcloudApiFactory{
     private static $instance = array();
@@ -29,8 +25,8 @@ class QcloudApiFactory{
     private static function getConfig($host){
         
         if(null === self::$config){
-            $secretId = "";
-            $secretKey = "";
+            $secretId = QCLOUD_API_SECRET_ID;
+            $secretKey = QCLOUD_API_SECRET_KEY;
             self::$config = array();
             
             self::$config['account.api.qcloud.com'] = array();

@@ -1,19 +1,15 @@
 <?php
 
-exit("comment out this code to run demo");
+require __DIR__. '/common.php';
 
 /**
  * 调用v2/DescribeProject例子，但返回原始数据供自行判断：http://www.qcloud.com/wiki/v2/DescribeProject
  */
 
-//如果用了PSR-4载入方式，以下require_once请删除忽略
-require_once __DIR__. '/../src/QcloudApi/Base/Request.php';
-require_once __DIR__. '/../src/QcloudApi/Base/Response.php';
-
 $request = new \QcloudApi\Base\Request(array(
     'host' => 'account.api.qcloud.com',
-    'secretId' => '你的secretId',
-    'secretKey' => '你的secretKey',
+    'secretId' => QCLOUD_API_SECRET_ID,
+    'secretKey' => QCLOUD_API_SECRET_KEY,
     'defaultRegion' => 'gz',
 ));
 
