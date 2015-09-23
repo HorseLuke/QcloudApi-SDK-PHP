@@ -10,7 +10,7 @@
 * 有完整的单元测试代码
 * 符合PSR-4载入方式
 * 仅需修改代码部分地方，即能快速转换成PSR-0载入方式以供PHP 5.2使用（namespace相关更改成类名即可）
-* 预留Composer接入模式（还没有做，主要不太熟悉composer.json）
+* 支持Composer接入（```composer require horseluke/qcloud-api-sdk```）
 
 
 ## 协议
