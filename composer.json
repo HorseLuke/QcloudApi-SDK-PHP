@@ -1,5 +1,5 @@
 {
-    "name": "horseluke/qcloudapi-sdk",
+    "name": "horseluke/qcloud-api-sdk",
     "description": "Unofficial SDK For QCloud API",
     "type": "library",
     "keywords": ["qcloud","tencent", "sdk", "api"],
