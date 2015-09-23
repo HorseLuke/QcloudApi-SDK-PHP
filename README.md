@@ -64,3 +64,5 @@ limitations under the License.
   
     详细用法见目录/demo/Integrate/ServiceLocatorBasicUsage.php
 
+
+![微信打赏](http://7xlz3z.com1.z0.glb.clouddn.com/img/git/wx_pay.jpg)
