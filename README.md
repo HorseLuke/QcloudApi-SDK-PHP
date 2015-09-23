@@ -58,7 +58,9 @@ limitations under the License.
 
 * 使用依赖注入（Dependency Injection）中的Service Locator + 单例模式。
 
-  - 有关依赖注入（Dependency Injection）中的Service Locator直观代码，可以看看 [Github silexphp/Pimple](https://github.com/silexphp/Pimple ) README.md中“Defining Services“部分。
-
-  - 详细见各大框架的实现。
+  - 有关Service Locator介绍，可以看 [Github silexphp/Pimple](https://github.com/silexphp/Pimple ) README.md中“Defining Services“部分。
+  
+  - 如果自己的框架没有实现，可使用SDK已经实现的简单Service Locator：\QcloudApi\Integrate\ServiceLocator。
+  
+    详细用法见目录/demo/Integrate/ServiceLocatorBasicUsage.php
 

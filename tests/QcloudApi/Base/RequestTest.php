@@ -2,6 +2,7 @@
 
 namespace QcloudApi\Base;
 
+use QcloudApi\Integrate\ServiceLocator;
 /**
  * Request基础测试
  * @author Horse Luke
@@ -14,16 +15,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase{
      */
     protected $request;
     
-    /**
-     * 
-     * @var array
-     */
-    protected $config;
-    
     protected function setUp(){
         parent::setUp();
-        $this->config = \Testsmoke_Loader::configRead('Request_config_api_cvm_from_wiki_example');
-        $this->request = new Request($this->config);
+        $this->request = ServiceLocator::getInstance()->getService('Request_config_api_cvm_from_wiki_example');
     }
     
     public function testSetConfigNoUse(){
@@ -32,7 +26,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase{
     }
     
     public function testGetConfig(){
-        $this->assertEquals($this->config['host'], $this->request->getConfig('host'));
+        $this->assertEquals('cvm.api.qcloud.com', $this->request->getConfig('host'));
     }
     
     public function testBuildSignature(){

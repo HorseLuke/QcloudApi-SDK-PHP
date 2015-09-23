@@ -9,7 +9,7 @@ ThinkPHP 是一个免费开源的，快速、简单的面向对象的 轻量级P
 https://github.com/liu21st/thinkphp
 
 ## Used in this project
-
+src/QcloudApi/Integrate/Loader.php
 testsmock/Class/Testsmoke_Loader.php
 
 ## License

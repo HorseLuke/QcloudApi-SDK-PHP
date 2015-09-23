@@ -3,6 +3,7 @@
 namespace QcloudApi\Example2account;
 
 use QcloudApi\Base\Request;
+use QcloudApi\Integrate\ServiceLocator;
 
 trait BaseSetupTestTrait{
     
@@ -21,13 +22,15 @@ trait BaseSetupTestTrait{
     protected function setUp(){
         parent::setUp();
         
-        $this->config = \Testsmoke_Loader::configRead('Request_config_api_account');
+        $this->request = ServiceLocator::getInstance()->getService('AccountRequest');
         
-        if(empty($this->config['secretId']) || empty($this->config['secretKey'])){
+        $secretId = $this->request->getConfig('secretId');
+        $secretKey = $this->request->getConfig('secretKey');
+        
+        if(empty($secretId) || empty($secretKey)){
             $this->markTestSkipped('secretId or secretKey is not set in config file, test will skipped' );
         }
         
-        $this->request = new Request($this->config);
     }
     
     

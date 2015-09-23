@@ -2,3 +2,4 @@
 /.project
 /.settings
 /testsmock/Config/Dev/
+/testsmock/LoaderConfig/ServiceLocatorProduction.php

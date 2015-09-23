@@ -9,8 +9,9 @@ Yii Software LLC (http://www.yiisoft.com)
 https://github.com/yiisoft/yii2
 
 ## Used in this project
-
+src/QcloudApi/Integrate/ServiceLocator.php
 testsmock/Class/Testsmoke_Loader.php
+
 
 ## License
 

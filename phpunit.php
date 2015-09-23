@@ -4,10 +4,26 @@ if(!class_exists('PHPUnit_TextUI_Command', false)){
     exit('THIS IS FOR PHPUNIT RUN ONLY');
 }
 
-require __DIR__ . '/testsmock/Class/Testsmoke_Loader.php';
 
-Testsmoke_Loader::regLoadClassPath("QcloudApi_src", __DIR__. '/src');
+//SDK初始化
+require __DIR__. '/src/QcloudApi/Integrate/Loader.php';
+\QcloudApi\Integrate\Loader::getInstance()->reg2SPL();
+
+//初始化Service Locator
+$serviceLocatorConfig = array(
+    'configFile' => array(
+        __DIR__. '/testsmock/LoaderConfig/ServiceLocatorDefault.php',
+        __DIR__. '/testsmock/LoaderConfig/ServiceLocatorPHPUnit.php',
+        __DIR__. '/testsmock/LoaderConfig/ServiceLocatorProduction.php',
+    ),
+);
+\QcloudApi\Integrate\ServiceLocator::getInstance($serviceLocatorConfig);
+
+
+//mock初始化
+require __DIR__ . '/testsmock/Class/Testsmoke_Loader.php';
 Testsmoke_Loader::regLoadClassPath("testcase", __DIR__. '/tests');
+
 
 Testsmoke_Loader::define(array(
     'D_APP_DIR' => __DIR__ . '/testsmock',

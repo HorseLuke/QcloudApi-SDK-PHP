@@ -1,5 +1,7 @@
 <?php
 
+use QcloudApi\Integrate\FileRequestLogger;
+
 require __DIR__. '/common.php';
 
 /**
@@ -15,12 +17,20 @@ $request = new \QcloudApi\Base\Request(array(
     'secretId' => QCLOUD_API_SECRET_ID,
     'secretKey' => QCLOUD_API_SECRET_KEY,
     'defaultRegion' => 'gz',
+    'protocol' => 'https',    //部分接口不支持http，此时需要设置相关参数（也可以在构造时传入）
 ));
 
-//部分接口不支持http，此时需要设置相关参数（也可以在构造时传入）
-$request->setConfig(array(
-    'protocol' => 'https',
+/*
+ * 如果需要记录日志，可参照以下代码，
+ * 在使用了\QcloudApi\Base\CurlRequestTrait的类中：
+ *     - 注入实现了\QcloudApi\Base\CurlRequestLoggerInterface接口类的实例
+ *         （\QcloudApi\Integrate\FileRequestLogger为一个示例）
+ * 传递的参数请参见方法\QcloudApi\Base\CurlRequestLoggerInterface::receiveSignalRequestLogger()
+ */
+$fileLogger = new FileRequestLogger(array(
+    'logDir' => QCLOUD_FILE_LOGDIR,
 ));
+$request->setRequestLogger('fileLogger', $fileLogger);
 
 $response = $request->send('DescribeProject', array(), 'GET');
 

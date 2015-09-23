@@ -69,6 +69,8 @@ class Request{
     protected $requestClient = "TDG_SRV_0.1";
     
 	protected $_curlInit;
+	
+	protected $requestLoggerStack = array();
     
     /**
      * 初始化对象
@@ -106,6 +108,41 @@ class Request{
     }
     
     /**
+     * 设置一个requestLogger
+     * @param string $name
+     * @param CurlRequestLoggerInterface $logger
+     */
+    public function setRequestLogger($name, CurlRequestLoggerInterface $logger){
+        $this->requestLoggerStack[$name] = $logger;
+    }
+    
+    /**
+     * 删除一个requestLogger
+     * @param string $name
+     */
+    public function delRequestLogger($name){
+        if(isset($this->requestLoggerStack[$name])){
+            unset($this->requestLoggerStack[$name]);
+        }
+    }
+    
+    /**
+     * 分发RequestLogger作记录
+     * @param string $url
+     * @param nill|string|array $finalBodyParam 请求的body体。
+     *     null表示没有发送任何body体。
+     *     string形式，表示以application/x-www-form-urlencoded组body。
+     *     array形式，表示以multipart/form-data组body体。常见于文件上传。
+     * @param string $requestMethod 请求方式
+     * @param Response $response 结果
+     */
+    protected function dispatchRequestLogger($url, $finalBodyParam, $requestMethod, Response $response){
+        foreach($this->requestLoggerStack as $logger){
+            $logger->receiveSignalRequestLogger($url, $finalBodyParam, $requestMethod, $response);
+        }
+    }
+    
+    /**
      * 发送请求
      * @param string $actionName
      * @param string $param
@@ -135,7 +172,7 @@ class Request{
      * @param Response $response
      * @return Response $response
      */
-    protected function rawSend($url, $bodyParam = null, $requestMethod = 'GET', Response $response = null){
+    public function rawSend($url, $bodyParam = null, $requestMethod = 'GET', Response $response = null){
         
         if(null === $response){
             $response = new Response();
@@ -183,6 +220,16 @@ class Request{
         }
         
         $response->setExtractInfo($curlInfo);
+        
+        if(!empty($this->requestLoggerStack)){
+            $this->dispatchRequestLogger(
+                $url,
+                isset($curlOpt[CURLOPT_POSTFIELDS]) ? $curlOpt[CURLOPT_POSTFIELDS] : null,
+                $requestMethod,
+                $response
+            );
+        }
+        
         return $response;
     }
     
@@ -216,8 +263,7 @@ class Request{
          
         foreach($params as $v){
             
-            //CURLFileCompat为低于php 5.5的兼容
-            if($v instanceof \CURLFile || $v instanceof CURLFileCompat){
+            if($this->isUploadAtomCmd($v)){
                 return true;
             }
             
@@ -233,7 +279,8 @@ class Request{
      */
     protected function rawSendBuildCleanUploadBody($param){
         foreach($param as $k => $v){
-            if($v instanceof \CURLFile || $v instanceof CURLFileCompat){
+            
+            if($this->isUploadAtomCmd($v)){
                 continue;
             }
     
