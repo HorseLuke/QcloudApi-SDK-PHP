@@ -13,7 +13,7 @@ class Request{
      * 接口协议
      * @var string
      */
-    protected $protocol = 'http';
+    protected $cfg_protocol = 'http';
     
     /**
      * (curl)关闭ssl证书verify
@@ -38,37 +38,37 @@ class Request{
      * 接口域名
      * @var string
      */
-    protected $host = "";
+    protected $cfg_host = "";
     
     /**
      * 接口url
      * @var string
      */
-    protected $uri = "/v2/index.php";
+    protected $cfg_uri = "/v2/index.php";
     
     /**
      * @var string
      */
-    protected $secretId = "";
+    protected $cfg_secretId = "";
     
     /**
      * @var string
      */
-    protected $secretKey = "";
+    protected $cfg_secretKey = "";
     
     /**
      * 默认区域参数
      * @var string
      */
-    protected $defaultRegion = "";
+    protected $cfg_defaultRegion = "";
     
     /**
      * 请求client
      * @var string
      */
-    protected $requestClient = "TDG_SRV_0.1";
+    protected $cfg_requestClient = "TDG_SRV_0.1";
     
-	protected $_curlInit;
+	protected $curlInit;
 	
 	protected $requestLoggerStack = array();
     
@@ -83,29 +83,42 @@ class Request{
     }
     
     /**
-     * 设置配置
-     * @param array $config
+     * 批量或单个设置配置
+     * @param mixed $key 如果是数组，则批量设置，此时不用传value
+     * @param mixed $value
      */
-    public function setConfig(array $config){
-        foreach($config as $k => $v){
-            if($k{0} === '_'){
-                continue;
+    public function setConfig($key, $value = null)
+    {
+        if(is_array($key)){
+            foreach ($key as $k => $v) {
+                $k = 'cfg_' . $k;
+                if (!property_exists($this, $k)) {
+                    continue;
+                }
+                $this->{$k} = $v;
             }
-            $this->{$k} = $v;
+            
+        }else{
+            $k = 'cfg_' . $key;
+            if (property_exists($this, $k)) {
+                $this->{$k} = $value;
+            }
         }
+
     }
     
     /**
      * 获取配置
+     *
      * @param string $k
      * @return string
      */
-    public function getConfig($k){
-        if($k{0} === '_'){
-            return null;
-        }
-        return isset($this->{$k}) ? $this->{$k} : null;
+    public function getConfig($k)
+    {
+        $k = 'cfg_' . $k;
+        return property_exists($this, $k) ? $this->{$k} : null;
     }
+    
     
     /**
      * 设置一个requestLogger
@@ -154,7 +167,7 @@ class Request{
         
         $requestMethod = strtoupper($requestMethod);
         
-        $url = $this->protocol. '://'. $this->host. $this->uri;
+        $url = $this->cfg_protocol. '://'. $this->cfg_host. $this->cfg_uri;
         $bodyParam = $this->buildParam($actionName, $param, $requestMethod);
         if('GET' == $requestMethod){
            $url .= '?'. http_build_query($bodyParam);
@@ -178,8 +191,8 @@ class Request{
             $response = new Response();
         }
         
-        if(null === $this->_curlInit){
-            $this->_curlInit = curl_init();
+        if(null === $this->curlInit){
+            $this->curlInit = curl_init();
         }
         
         $curlOpt = $this->getDefaultCurlOpt();
@@ -207,14 +220,14 @@ class Request{
             }
         }
         
-        curl_setopt_array($this->_curlInit, $curlOpt);
+        curl_setopt_array($this->curlInit, $curlOpt);
         
-        $rawResult = curl_exec($this->_curlInit);
-        $curlInfo = curl_getinfo($this->_curlInit);
+        $rawResult = curl_exec($this->curlInit);
+        $curlInfo = curl_getinfo($this->curlInit);
         
-        $curl_errno = curl_errno($this->_curlInit);
+        $curl_errno = curl_errno($this->curlInit);
         if($curl_errno){
-            $response->setError("CURL_ERROR", curl_error($this->_curlInit). '[ErrCode '. $curl_errno. ']');
+            $response->setError("CURL_ERROR", curl_error($this->curlInit). '[ErrCode '. $curl_errno. ']');
         }else{
             $response->create($curlInfo['http_code'], $rawResult);
         }
@@ -311,9 +324,6 @@ class Request{
     public function curl_file_create($filename, $mimetype = '', $postname = ''){
          
         if (!function_exists('curl_file_create')) {
-            if(!class_exists('QcloudApi\Base\CURLFileCompat')){
-                require_once __DIR__. '/CURLFileCompat.php';
-            }
             return new CURLFileCompat($filename, $mimetype, ($postname ? $postname : basename($filename)));
         }
         
@@ -330,9 +340,9 @@ class Request{
      */
     public function createUrl($actionName, $param = null, $requestMethod = 'GET'){
         if($requestMethod == 'GET'){
-            return $this->protocol. '://'. $this->host. $this->uri. '?'. http_build_query($this->buildParam($actionName, $param, $requestMethod));
+            return $this->cfg_protocol. '://'. $this->cfg_host. $this->cfg_uri. '?'. http_build_query($this->buildParam($actionName, $param, $requestMethod));
         }else{
-            return $this->protocol. '://'. $this->host. $this->uri;
+            return $this->cfg_protocol. '://'. $this->cfg_host. $this->cfg_uri;
         }
     }
     
@@ -355,10 +365,10 @@ class Request{
         
         $param['Action'] = ucfirst($actionName);
         if (!isset($param['Region'])){
-            $param['Region'] = $this->defaultRegion;
+            $param['Region'] = $this->cfg_defaultRegion;
         }
-        $param['SecretId'] = $this->secretId;
-        //$param['RequestClient'] = $this->requestClient;
+        $param['SecretId'] = $this->cfg_secretId;
+        //$param['RequestClient'] = $this->cfg_requestClient;
         
         $param['Timestamp'] = time();
         $param['Nonce'] = mt_rand();
@@ -372,7 +382,7 @@ class Request{
      * @param string $requestMethod 请求方法，必须全大写
      */
     public function buildSignature(array $param, $requestMethod = 'GET'){
-        $plainText = $requestMethod. $this->host. $this->uri;
+        $plainText = $requestMethod. $this->cfg_host. $this->cfg_uri;
         
         ksort($param);
         
@@ -394,7 +404,7 @@ class Request{
             
         }
         
-        return base64_encode(hash_hmac('sha1', $plainText, $this->secretKey, true));
+        return base64_encode(hash_hmac('sha1', $plainText, $this->cfg_secretKey, true));
         
     }
     
@@ -414,8 +424,8 @@ class Request{
     }
     
     public function __destruct(){
-        if ($this->_curlInit) {
-		    curl_close($this->_curlInit);
+        if ($this->curlInit) {
+		    curl_close($this->curlInit);
         }
     }
     
