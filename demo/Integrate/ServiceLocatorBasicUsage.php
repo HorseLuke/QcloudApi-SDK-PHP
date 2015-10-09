@@ -11,7 +11,7 @@ require __DIR__. '/../common.php';
 $SLConfig = array(
     'configFile' => __DIR__. '/ConfigServiceLocatorDefaultDemo.php',    //配置文件写法见本文件所在文件夹下的ConfigServiceLocatorDefaultDemo.php
 );
-ServiceLocator::getInstance($SLConfig);
+ServiceLocator::setInstanceDefaultConfig($SLConfig);
 //（以上代码必须且只需要调用一次）初始化依赖注入Service Locator的实例
 
 

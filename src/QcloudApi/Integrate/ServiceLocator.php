@@ -9,45 +9,55 @@ namespace QcloudApi\Integrate;
  *
  */
 class ServiceLocator{
-    
+
+    /**
+     * 单例
+     * @var unknown
+     */
     protected static $instance;
-    
+
+    /**
+     * 单例的默认配置（请勿修改，内部使用）
+     * @var unknown
+     */
+    protected static $instanceDefaultCfg;
+
     /**
      * 依赖注入Service Locator配置文件位置
      * 如果为数组，下一个文件会覆盖上一个文件配置！
      * @var string
      */
     protected $cfg_configFile;
-    
+
     /**
      * 依赖注入Service Locator注册树
      * @var string
      */
     protected $registry = array();
-    
+
     /**
      * 依赖注入Service Locator实例树
      * @var string
-     */
+    */
     protected $serviceLocatorInstance = array();
-    
-    
+
+
     /**
      * 初始化对象
      * 非特殊情况下，请使用静态方法ServiceLocator::getInstance()获取单例！
      *
-     * @param array $config            
-     */
+     * @param array $config
+    */
     public function __construct(array $config = null)
     {
         if (! empty($config)) {
             $this->setConfig($config);
         }
-        
+
         $this->initServiceByConfigFile();
-        
+
     }
-    
+
     /**
      * 设置配置
      * @param array $config
@@ -62,7 +72,7 @@ class ServiceLocator{
             $this->{$k} = $v;
         }
     }
-    
+
     /**
      * 获取配置
      *
@@ -74,20 +84,41 @@ class ServiceLocator{
         $k = 'cfg_' . $k;
         return isset($this->{$k}) ? $this->{$k} : null;
     }
-    
-    
+
+
     /**
      * 获取单例
      * @return \QcloudApi\Integrate\ServiceLocator
      */
     public static function getInstance(array $config = null){
         if(null === self::$instance){
+            if(null === $config){
+                $config = self::$instanceDefaultCfg;
+            }else{
+                self::$instanceDefaultCfg = $config;    //如果是在调用本方法时候手动传入的，则要进行赋值以记录
+            }
             self::$instance = new self($config);
         }
-        
+
         return self::$instance;
     }
-    
+
+    /**
+     * 设置在调用单例方法前（getInstance）的默认配置
+     * @param mixed $cfg
+     */
+    public static function setInstanceDefaultConfig(array $cfg = null){
+        self::$instanceDefaultCfg = $cfg;
+    }
+
+    /**
+     * 获取在调用单例方法（getInstance）的默认配置
+     * @param mixed $cfg
+     */
+    public static function getInstanceDefaultConfig(){
+        return self::$instanceDefaultCfg;
+    }
+
     /**
      * 依赖注入Service Locator：获取一个注册的Service实例
      * 每次调用均为同一个单例
@@ -98,17 +129,17 @@ class ServiceLocator{
         if(isset($this->serviceLocatorInstance[$name])){
             return $this->serviceLocatorInstance[$name];
         }
-        
+
         $service = isset($this->registry[$name]) ? $this->registry[$name] : null;
         if(null === $service || !$service instanceof \Closure){
             return $service;
         }
-        
+
         $this->serviceLocatorInstance[$name] = $service($this);
-        
+
         return $this->serviceLocatorInstance[$name];
     }
-    
+
     /**
      * 依赖注入Service Locator：创建一个注册的Service实例
      * 如果注册时是一个匿名函数，则一个每次调用均产生不同的实例。
@@ -121,10 +152,10 @@ class ServiceLocator{
         if(null === $service || !$service instanceof \Closure){
             return $service;
         }
-    
+
         return $service($this);
     }
-    
+
     /**
      * 依赖注入Service Locator：注册一个Service
      * @param string $name Service名称
@@ -136,7 +167,7 @@ class ServiceLocator{
             unset($this->serviceLocatorInstance[$name]);
         }
     }
-    
+
     /**
      * 依赖注入Service Locator：删除一个Service
      * @param string $name Service名称
@@ -149,35 +180,36 @@ class ServiceLocator{
             unset($this->serviceLocatorInstance[$name]);
         }
     }
-    
+
     /**
      * 依赖注入Service Locator：初始化Service注册树
      */
     protected function initServiceByConfigFile(){
-        
+
         if(empty($this->cfg_configFile)){
             return ;
         }
-        
+
         $sourceFiles = is_array($this->cfg_configFile) ? $this->cfg_configFile : array($this->cfg_configFile);
+
         $conf = array();
-        
+
         foreach($sourceFiles as $file){
-    
+
             if(!file_exists($file)){
                 continue;
             }
-            
+
             $newConf = require $file;
             if(is_array($newConf) && !empty($newConf)){
                 $conf = self::array_merge($conf, $newConf);
             }
         }
-        
+
         $this->registry = $conf;
-        
+
     }
-    
+
     /**
      * 两个数组合并，代码来自yiiframework
      * Merges two or more arrays into one recursively.
@@ -207,8 +239,8 @@ class ServiceLocator{
                 }
             }
         }
-    
+
         return $res;
     }
-    
+
 }
